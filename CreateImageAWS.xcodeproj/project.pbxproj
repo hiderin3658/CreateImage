@@ -1,0 +1,563 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		69CEC8F12DA93B9F000BA0CE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69CEC8D62DA93B9E000BA0CE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 69CEC8DD2DA93B9E000BA0CE;
+			remoteInfo = CreateImageAWS;
+		};
+		69CEC8FB2DA93B9F000BA0CE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69CEC8D62DA93B9E000BA0CE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 69CEC8DD2DA93B9E000BA0CE;
+			remoteInfo = CreateImageAWS;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		69CEC8DE2DA93B9E000BA0CE /* CreateImageAWS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CreateImageAWS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		69CEC8F02DA93B9F000BA0CE /* CreateImageAWSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CreateImageAWSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		69CEC8FA2DA93B9F000BA0CE /* CreateImageAWSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CreateImageAWSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		69CEC8E02DA93B9E000BA0CE /* CreateImageAWS */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CreateImageAWS;
+			sourceTree = "<group>";
+		};
+		69CEC8F32DA93B9F000BA0CE /* CreateImageAWSTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CreateImageAWSTests;
+			sourceTree = "<group>";
+		};
+		69CEC8FD2DA93B9F000BA0CE /* CreateImageAWSUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CreateImageAWSUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		69CEC8DB2DA93B9E000BA0CE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69CEC8ED2DA93B9F000BA0CE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69CEC8F72DA93B9F000BA0CE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		69CEC8D52DA93B9E000BA0CE = {
+			isa = PBXGroup;
+			children = (
+				69CEC8E02DA93B9E000BA0CE /* CreateImageAWS */,
+				69CEC8F32DA93B9F000BA0CE /* CreateImageAWSTests */,
+				69CEC8FD2DA93B9F000BA0CE /* CreateImageAWSUITests */,
+				69CEC8DF2DA93B9E000BA0CE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		69CEC8DF2DA93B9E000BA0CE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69CEC8DE2DA93B9E000BA0CE /* CreateImageAWS.app */,
+				69CEC8F02DA93B9F000BA0CE /* CreateImageAWSTests.xctest */,
+				69CEC8FA2DA93B9F000BA0CE /* CreateImageAWSUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		69CEC8DD2DA93B9E000BA0CE /* CreateImageAWS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69CEC9042DA93B9F000BA0CE /* Build configuration list for PBXNativeTarget "CreateImageAWS" */;
+			buildPhases = (
+				69CEC8DA2DA93B9E000BA0CE /* Sources */,
+				69CEC8DB2DA93B9E000BA0CE /* Frameworks */,
+				69CEC8DC2DA93B9E000BA0CE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				69CEC8E02DA93B9E000BA0CE /* CreateImageAWS */,
+			);
+			name = CreateImageAWS;
+			packageProductDependencies = (
+			);
+			productName = CreateImageAWS;
+			productReference = 69CEC8DE2DA93B9E000BA0CE /* CreateImageAWS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		69CEC8EF2DA93B9F000BA0CE /* CreateImageAWSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69CEC9072DA93B9F000BA0CE /* Build configuration list for PBXNativeTarget "CreateImageAWSTests" */;
+			buildPhases = (
+				69CEC8EC2DA93B9F000BA0CE /* Sources */,
+				69CEC8ED2DA93B9F000BA0CE /* Frameworks */,
+				69CEC8EE2DA93B9F000BA0CE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				69CEC8F22DA93B9F000BA0CE /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				69CEC8F32DA93B9F000BA0CE /* CreateImageAWSTests */,
+			);
+			name = CreateImageAWSTests;
+			packageProductDependencies = (
+			);
+			productName = CreateImageAWSTests;
+			productReference = 69CEC8F02DA93B9F000BA0CE /* CreateImageAWSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		69CEC8F92DA93B9F000BA0CE /* CreateImageAWSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69CEC90A2DA93B9F000BA0CE /* Build configuration list for PBXNativeTarget "CreateImageAWSUITests" */;
+			buildPhases = (
+				69CEC8F62DA93B9F000BA0CE /* Sources */,
+				69CEC8F72DA93B9F000BA0CE /* Frameworks */,
+				69CEC8F82DA93B9F000BA0CE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				69CEC8FC2DA93B9F000BA0CE /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				69CEC8FD2DA93B9F000BA0CE /* CreateImageAWSUITests */,
+			);
+			name = CreateImageAWSUITests;
+			packageProductDependencies = (
+			);
+			productName = CreateImageAWSUITests;
+			productReference = 69CEC8FA2DA93B9F000BA0CE /* CreateImageAWSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		69CEC8D62DA93B9E000BA0CE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1630;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					69CEC8DD2DA93B9E000BA0CE = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					69CEC8EF2DA93B9F000BA0CE = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 69CEC8DD2DA93B9E000BA0CE;
+					};
+					69CEC8F92DA93B9F000BA0CE = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 69CEC8DD2DA93B9E000BA0CE;
+					};
+				};
+			};
+			buildConfigurationList = 69CEC8D92DA93B9E000BA0CE /* Build configuration list for PBXProject "CreateImageAWS" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 69CEC8D52DA93B9E000BA0CE;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 69CEC8DF2DA93B9E000BA0CE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				69CEC8DD2DA93B9E000BA0CE /* CreateImageAWS */,
+				69CEC8EF2DA93B9F000BA0CE /* CreateImageAWSTests */,
+				69CEC8F92DA93B9F000BA0CE /* CreateImageAWSUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		69CEC8DC2DA93B9E000BA0CE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69CEC8EE2DA93B9F000BA0CE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69CEC8F82DA93B9F000BA0CE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		69CEC8DA2DA93B9E000BA0CE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69CEC8EC2DA93B9F000BA0CE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69CEC8F62DA93B9F000BA0CE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		69CEC8F22DA93B9F000BA0CE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 69CEC8DD2DA93B9E000BA0CE /* CreateImageAWS */;
+			targetProxy = 69CEC8F12DA93B9F000BA0CE /* PBXContainerItemProxy */;
+		};
+		69CEC8FC2DA93B9F000BA0CE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 69CEC8DD2DA93B9E000BA0CE /* CreateImageAWS */;
+			targetProxy = 69CEC8FB2DA93B9F000BA0CE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		69CEC9022DA93B9F000BA0CE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Q2T8A8W9C3;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		69CEC9032DA93B9F000BA0CE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Q2T8A8W9C3;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		69CEC9052DA93B9F000BA0CE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q2T8A8W9C3;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hamasan.CreateImageAWS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		69CEC9062DA93B9F000BA0CE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q2T8A8W9C3;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hamasan.CreateImageAWS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		69CEC9082DA93B9F000BA0CE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q2T8A8W9C3;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hamasan.CreateImageAWSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CreateImageAWS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CreateImageAWS";
+			};
+			name = Debug;
+		};
+		69CEC9092DA93B9F000BA0CE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q2T8A8W9C3;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hamasan.CreateImageAWSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CreateImageAWS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CreateImageAWS";
+			};
+			name = Release;
+		};
+		69CEC90B2DA93B9F000BA0CE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q2T8A8W9C3;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hamasan.CreateImageAWSUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CreateImageAWS;
+			};
+			name = Debug;
+		};
+		69CEC90C2DA93B9F000BA0CE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q2T8A8W9C3;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hamasan.CreateImageAWSUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CreateImageAWS;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		69CEC8D92DA93B9E000BA0CE /* Build configuration list for PBXProject "CreateImageAWS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69CEC9022DA93B9F000BA0CE /* Debug */,
+				69CEC9032DA93B9F000BA0CE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69CEC9042DA93B9F000BA0CE /* Build configuration list for PBXNativeTarget "CreateImageAWS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69CEC9052DA93B9F000BA0CE /* Debug */,
+				69CEC9062DA93B9F000BA0CE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69CEC9072DA93B9F000BA0CE /* Build configuration list for PBXNativeTarget "CreateImageAWSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69CEC9082DA93B9F000BA0CE /* Debug */,
+				69CEC9092DA93B9F000BA0CE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69CEC90A2DA93B9F000BA0CE /* Build configuration list for PBXNativeTarget "CreateImageAWSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69CEC90B2DA93B9F000BA0CE /* Debug */,
+				69CEC90C2DA93B9F000BA0CE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 69CEC8D62DA93B9E000BA0CE /* Project object */;
+}
