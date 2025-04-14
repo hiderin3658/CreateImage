@@ -6,15 +6,20 @@
 //
 
 import SwiftUI
+import AWSCore
 
 @main
 struct CreateImageAWSApp: App {
     let persistenceController = PersistenceController.shared
 
+    init() {
+        AWSLogger.default().logLevel = .debug
+        print("AWS SDK log level set to debug.")
+    }
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            ImageGeneratorView()
         }
     }
 }

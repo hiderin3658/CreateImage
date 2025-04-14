@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		69CEC91B2DA96072000BA0CE /* AWSAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 69CEC91A2DA96072000BA0CE /* AWSAuthCore */; };
+		69CEC91D2DA96072000BA0CE /* AWSCognitoIdentityProvider in Frameworks */ = {isa = PBXBuildFile; productRef = 69CEC91C2DA96072000BA0CE /* AWSCognitoIdentityProvider */; };
+		69CEC91F2DA96072000BA0CE /* AWSCore in Frameworks */ = {isa = PBXBuildFile; productRef = 69CEC91E2DA96072000BA0CE /* AWSCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		69CEC8F12DA93B9F000BA0CE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +58,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69CEC91F2DA96072000BA0CE /* AWSCore in Frameworks */,
+				69CEC91B2DA96072000BA0CE /* AWSAuthCore in Frameworks */,
+				69CEC91D2DA96072000BA0CE /* AWSCognitoIdentityProvider in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +121,9 @@
 			);
 			name = CreateImageAWS;
 			packageProductDependencies = (
+				69CEC91A2DA96072000BA0CE /* AWSAuthCore */,
+				69CEC91C2DA96072000BA0CE /* AWSCognitoIdentityProvider */,
+				69CEC91E2DA96072000BA0CE /* AWSCore */,
 			);
 			productName = CreateImageAWS;
 			productReference = 69CEC8DE2DA93B9E000BA0CE /* CreateImageAWS.app */;
@@ -195,6 +207,9 @@
 			);
 			mainGroup = 69CEC8D52DA93B9E000BA0CE;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				69CEC9192DA96072000BA0CE /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 69CEC8DF2DA93B9E000BA0CE /* Products */;
 			projectDirPath = "";
@@ -558,6 +573,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		69CEC9192DA96072000BA0CE /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/aws-amplify/aws-sdk-ios-spm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.40.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		69CEC91A2DA96072000BA0CE /* AWSAuthCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 69CEC9192DA96072000BA0CE /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */;
+			productName = AWSAuthCore;
+		};
+		69CEC91C2DA96072000BA0CE /* AWSCognitoIdentityProvider */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 69CEC9192DA96072000BA0CE /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */;
+			productName = AWSCognitoIdentityProvider;
+		};
+		69CEC91E2DA96072000BA0CE /* AWSCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 69CEC9192DA96072000BA0CE /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */;
+			productName = AWSCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 69CEC8D62DA93B9E000BA0CE /* Project object */;
 }
