@@ -73,15 +73,43 @@ class ImageGeneratorViewModel: ObservableObject {
             return
         }
         
+        // シミュレータでは写真保存が機能しない場合がある
+        #if targetEnvironment(simulator)
+        // シミュレータでは一時的にファイルとして保存する代替手段を提供
+        if let data = image.pngData(), let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let fileURL = directory.appendingPathComponent("generated_image_\(Date().timeIntervalSince1970).png")
+            do {
+                try data.write(to: fileURL)
+                self.errorMessage = "画像をシミュレータ内に保存しました: \(fileURL.path)"
+                print("画像をシミュレータ内に保存しました: \(fileURL.path)")
+            } catch {
+                self.errorMessage = "シミュレータでの保存エラー: \(error.localizedDescription)"
+            }
+            return
+        }
+        #endif
+        
+        // 実機では通常の写真ライブラリへの保存を試みる
         UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
     }
     
     // Callback for image saving
     @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
         if let error = error {
-            errorMessage = "Error saving image: \(error.localizedDescription)"
+            // 写真ライブラリへのアクセス権限がない場合の特定のエラー処理
+            let nsError = error as NSError
+            if nsError.domain == "ALAssetsLibraryErrorDomain" && (nsError.code == -3310 || nsError.code == -3311) {
+                self.errorMessage = "写真へのアクセス権限がありません。設定アプリから権限を許可してください。"
+            } else {
+                self.errorMessage = "Error saving image: \(error.localizedDescription)"
+            }
         } else {
-            errorMessage = nil
+            // 成功した場合のフィードバック
+            self.errorMessage = "写真に保存しました"
+            // 少し遅れてメッセージをクリア
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+                self?.errorMessage = nil
+            }
         }
     }
     

@@ -8,13 +8,7 @@ class AWSManager {
     // 認証情報を別ファイルから参照
     private var cognito_pool_id = AWSCredentials.identityPoolId
     private var cognito_region = AWSCredentials.cognitoRegion
-    private var bedrock_region = AWSCredentials.bedrockRegion
-    
-    // Bedrockエンドポイント
-    private let bedrockEndpoint = "https://bedrock-runtime.\(AWSCredentials.bedrockRegion).amazonaws.com"
-    
-    // Nova Canvas モデルID (要確認・修正)
-    private let novaCanvasModelId = "amazon.nova-canvas-v1:0" // 仮のID。必要に応じて正しいIDに修正してください。
+    private var api_gateway_invoke_url = AWSCredentials.apiGatewayInvokeUrl
     
     // AWS認証情報プロバイダー
     private var credentialsProvider: AWSCognitoCredentialsProvider?
@@ -57,106 +51,140 @@ class AWSManager {
         }
     }
     
-    // Nova Canvas 用の画像生成メソッド
+    // ImageGeneratorViewModelから呼び出されるメソッド
     func generateImage(
         prompt: String,
-        stylePreset: String? = nil, // Nova Canvas用のスタイルプリセット (例: "photorealistic")
+        stylePreset: String? = nil,
         numberOfImages: Int = 1,
         width: Int = 1024,
         height: Int = 1024,
-        cfgScale: Double = 7.0, // Nova Canvasのデフォルト値に近い可能性
+        cfgScale: Double = 7.0,
         seed: Int = 0,
-        steps: Int = 50, // Nova Canvasのステップ数 (要確認)
+        steps: Int = 50,
         completion: @escaping (Result<Data, Error>) -> Void
     ) {
-        // Nova Canvas用のリクエスト本文を作成 (API仕様に合わせて要調整)
-        var textPrompts: [[String: Any]] = [["text": prompt, "weight": 1.0]]
-        // ネガティブプロンプトも配列形式の可能性がある
-        // let negativePrompts: [[String: Any]] = [["text": negativePrompt, "weight": -1.0]]
-
+        // 内部でAPI Gateway経由のメソッドを呼び出す
+        generateImageViaApiGateway(
+            prompt: prompt,
+            stylePreset: stylePreset,
+            numberOfImages: numberOfImages,
+            width: width,
+            height: height,
+            cfgScale: cfgScale,
+            seed: seed,
+            steps: steps,
+            completion: completion
+        )
+    }
+    
+    // API Gateway経由で画像生成をリクエストするメソッド
+    func generateImageViaApiGateway(
+        prompt: String,
+        stylePreset: String? = nil,
+        numberOfImages: Int = 1,
+        width: Int = 1024,
+        height: Int = 1024,
+        cfgScale: Double = 7.0,
+        seed: Int = 0,
+        steps: Int = 50,
+        completion: @escaping (Result<Data, Error>) -> Void
+    ) {
+        // API Gatewayに送信するリクエスト本文を作成
         var requestDict: [String: Any] = [
-            "text_prompts": textPrompts,
-            // "negative_prompts": negativePrompts, // 必要なら追加
-            "cfg_scale": cfgScale,
-            "seed": seed,
-            "steps": steps,
+            "prompt": prompt,
+            "numberOfImages": numberOfImages,
             "width": width,
             "height": height,
-            // "samples": numberOfImages, // パラメータ名が違う可能性あり
+            "cfgScale": cfgScale,
+            "seed": seed,
+            "steps": steps
         ]
-
         if let style = stylePreset, !style.isEmpty {
             requestDict["style_preset"] = style
         }
 
-        invokeBedrockAPI(modelId: novaCanvasModelId, requestDict: requestDict, completion: completion)
+        invokeApiGateway(endpointPath: AWSCredentials.apiGatewayResourcePath, // AWSCredentialsから参照
+                         httpMethod: "POST",
+                         requestDict: requestDict,
+                         completion: completion)
     }
 
-    // --- Titan V2の背景削除機能は削除 ---
-    // func removeBackground(...) { ... }
-
-    // Bedrock REST APIを呼び出す共通メソッド (内容は変更なし、エラー処理を維持)
-    private func invokeBedrockAPI(
-        modelId: String,
-        requestDict: [String: Any],
+    // API Gatewayを呼び出す共通メソッド (SigV4署名付き)
+    private func invokeApiGateway(
+        endpointPath: String, // 例: "/generateImage"
+        httpMethod: String,   // 例: "POST"
+        requestDict: [String: Any]?,
         completion: @escaping (Result<Data, Error>) -> Void
     ) {
-        // ... (既存のAPI呼び出し、署名、エラー処理ロジックはそのまま) ...
-        // 注意: このメソッド内のログ出力やエラー処理は現状維持しますが、
-        // IAMポリシーエラーのメッセージはNova Canvasモデルへの権限不足を指摘するように調整が必要かもしれません。
-        
         guard let credentialsProvider = self.credentialsProvider else {
             print("🔴 AWS認証情報エラー: No credentials provider")
             completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "No credentials provider"])))
             return
         }
-        
+
+        // API GatewayのエンドポイントURLを構築
+        guard !api_gateway_invoke_url.isEmpty && api_gateway_invoke_url != "YOUR_API_GATEWAY_INVOKE_URL",
+              let baseUrl = URL(string: api_gateway_invoke_url),
+              let endpointUrl = URL(string: endpointPath, relativeTo: baseUrl) else {
+            let errorMsg = api_gateway_invoke_url.isEmpty || api_gateway_invoke_url == "YOUR_API_GATEWAY_INVOKE_URL"
+                         ? "API Gateway Invoke URLが設定されていません (AWSCredentials.swiftを確認)"
+                         : "無効なAPI Gateway URLまたはパス: Base=\(api_gateway_invoke_url), Path=\(endpointPath)"
+            print("🔴 URL構築エラー: \(errorMsg)")
+            completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: errorMsg])))
+            return
+        }
+
+        print("📡 API Gateway 呼び出し準備: URL=\(endpointUrl.absoluteString)")
+
         credentialsProvider.credentials().continueWith { (task) -> Any? in
             if let error = task.error {
                 print("🔴 AWS認証情報エラー: \(error.localizedDescription)")
                 completion(.failure(error))
                 return nil
             }
-            
+
             guard let credentials = task.result else {
                 print("🔴 AWS認証情報取得失敗: 結果がnilです")
                 completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to get AWS credentials"])))
                 return nil
             }
-            
+
             let accessKeySuffix = String(credentials.accessKey.suffix(4))
             print("🟢 認証情報取得成功: アクセスキー末尾 \(accessKeySuffix)")
-            print("🟢 セッショントークン有無: \(credentials.sessionKey != nil ? "あり" : "なし")")
-            
-            let urlString = "\(self.bedrockEndpoint)/model/\(modelId)/invoke"
-            guard let url = URL(string: urlString) else {
-                completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
-                return nil
-            }
-            
+
             do {
-                let requestData = try JSONSerialization.data(withJSONObject: requestDict, options: [])
-                if let requestString = String(data: requestData, encoding: .utf8) {
-                    print("📤 リクエスト本文: \(requestString)")
-                }
-                
-                var request = URLRequest(url: url)
-                request.httpMethod = "POST"
-                request.httpBody = requestData
+                var request = URLRequest(url: endpointUrl)
+                request.httpMethod = httpMethod
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.setValue("application/json", forHTTPHeaderField: "Accept") // Acceptも必要か確認
-                
+                request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+                if let dict = requestDict {
+                    let requestData = try JSONSerialization.data(withJSONObject: dict, options: [])
+                    request.httpBody = requestData
+                    if let requestString = String(data: requestData, encoding: .utf8) {
+                        print("📤 リクエスト本文: \(requestString)")
+                    }
+                }
+
+                // API Gateway呼び出し用にSigV4署名を適用 (Serviceは 'execute-api')
+                // AWSRegionTypeから文字列への変換が必要
+                guard let regionString = self.awsRegionTypeToString(self.cognitoRegionToAWSRegionType(region: self.cognito_region)) else {
+                     print("🔴 リージョン文字列変換エラー: \(self.cognito_region)")
+                     completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert region type to string"])))
+                     return nil
+                }
+
                 let _ = AWSSigner.sign(
                     request: &request,
                     accessKey: credentials.accessKey,
                     secretKey: credentials.secretKey,
                     sessionToken: credentials.sessionKey,
-                    region: self.bedrock_region,
-                    service: "bedrock",
+                    region: regionString, // 文字列のリージョンを渡す
+                    service: "execute-api", // サービス名を変更
                     date: Date()
                 )
-                
-                print("📡 Bedrock API呼び出し: モデル=\(modelId), URL=\(urlString)")
+
+                print("📡 API Gateway 呼び出し実行: \(httpMethod) \(endpointUrl.absoluteString)")
                 print("📡 リクエストヘッダー:")
                 request.allHTTPHeaderFields?.forEach { key, value in
                     if key == "Authorization" {
@@ -165,182 +193,131 @@ class AWSManager {
                         print("  \(key): \(value)")
                     }
                 }
-                
+
                 let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                     if let error = error {
                         print("🔴 ネットワークエラー: \(error.localizedDescription)")
                         completion(.failure(error))
                         return
                     }
-                    
+
                     guard let httpResponse = response as? HTTPURLResponse else {
                         print("🔴 HTTPレスポンスではありません")
                         completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])))
                         return
                     }
-                    
+
                     print("📩 HTTPステータスコード: \(httpResponse.statusCode)")
-                    print("📩 レスポンスヘッダー:")
-                    httpResponse.allHeaderFields.forEach { key, value in
-                        print("  \(key): \(value)")
-                    }
-                    
+                    // ... (レスポンスヘッダーのログは省略可)
+
+                    guard let responseData = data else {
+                         print("🔴 レスポンスデータがありません")
+                         completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data in response. Status: \(httpResponse.statusCode)"])))
+                         return
+                     }
+
                     if httpResponse.statusCode != 200 {
-                        var errorMessage = "HTTP Error: \(httpResponse.statusCode)"
-                        var errorDetails: [String: Any] = [:]
-                        if let responseData = data, let responseString = String(data: responseData, encoding: .utf8) {
-                            print("🔴 エラーレスポンス: \(responseString)")
-                            errorDetails["response"] = responseString
-                            if responseString.contains("is not authorized to perform: bedrock:InvokeModel") {
-                                let iamError = NSError(
-                                    domain: "AWSBedrockError",
-                                    code: 403,
-                                    userInfo: [
-                                        NSLocalizedDescriptionKey: "AWS IAM権限エラー: Bedrockモデルへのアクセス権限がありません",
-                                        NSLocalizedRecoverySuggestionErrorKey: "AWSコンソールでIAMポリシーを確認し、'bedrock:InvokeModel'アクションの権限をロールに追加し、Nova CanvasモデルのARNがResourceに含まれているか確認してください。また、BedrockコンソールでNova Canvasモデルアクセスが有効になっているか確認してください。"
-                                    ]
-                                )
-                                completion(.failure(iamError))
+                        let responseString = String(data: responseData, encoding: .utf8) ?? ""
+                        print("🔴 API Gateway エラーレスポンス: \(responseString)")
+                        // API Gatewayからのエラーメッセージをラップする
+                        let apiError = NSError(
+                            domain: "APIGatewayError",
+                            code: httpResponse.statusCode,
+                            userInfo: [NSLocalizedDescriptionKey: "API Gateway Error (Status: \(httpResponse.statusCode))", "response": responseString]
+                        )
+                        completion(.failure(apiError))
+                        return
+                    }
+
+                    // JSONレスポンスをパース
+                    do {
+                        if let responseString = String(data: responseData, encoding: .utf8) {
+                            print("📥 レスポンス本文: \(responseString)")
+                        }
+                        
+                        // API Gateway Lambda Proxyインテグレーションによるレスポンス構造
+                        let jsonResponse = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any]
+                        
+                        // API Gateway Lambdaプロキシ統合ではbodyがJSON文字列としてネストされている
+                        if let bodyString = jsonResponse?["body"] as? String {
+                            print("📥 ネストされたbody: \(bodyString)")
+                            
+                            // body文字列を再度JSONとしてパース
+                            if let bodyData = bodyString.data(using: .utf8),
+                               let bodyJson = try? JSONSerialization.jsonObject(with: bodyData, options: []) as? [String: Any] {
+                                
+                                // bodyJSONから画像データを抽出
+                                if let images = bodyJson["images"] as? [String], let base64Image = images.first {
+                                    print("🟢 画像データ受信成功")
+                                    if let imageData = Data(base64Encoded: base64Image, options: .ignoreUnknownCharacters) {
+                                        print("🟢 Base64デコード成功")
+                                        completion(.success(imageData))
+                                        return
+                                    } else {
+                                        print("🔴 Base64デコード失敗: 無効なBase64データ")
+                                    }
+                                } else {
+                                    print("🔴 bodyJSONに画像データが含まれていません")
+                                    // bodyJSONの構造をログ出力
+                                    print("bodyJSON構造: \(bodyJson)")
+                                }
+                                
+                                // エラー情報の確認
+                                if let error = bodyJson["error"] as? String {
+                                    print("🔴 Lambda エラー: \(error)")
+                                    completion(.failure(NSError(domain: "LambdaError", code: -1, userInfo: [NSLocalizedDescriptionKey: error])))
+                                    return
+                                }
+                            } else {
+                                print("🔴 bodyのJSONパース失敗")
+                            }
+                        } else if let images = jsonResponse?["images"] as? [String], let base64Image = images.first {
+                            // 直接レスポンスに画像データが含まれている場合の処理（プロキシなしのケース）
+                            print("🟢 直接レスポンスから画像データ受信")
+                            if let imageData = Data(base64Encoded: base64Image, options: .ignoreUnknownCharacters) {
+                                print("🟢 Base64デコード成功")
+                                completion(.success(imageData))
                                 return
                             }
+                        } else {
+                            print("🔴 レスポンスにbodyキーまたは画像データが含まれていません")
+                            print("レスポンス構造: \(jsonResponse ?? [:])")
                         }
-                        // 他のエラーコード処理...
-                        completion(.failure(NSError(domain: "AWSManager", code: httpResponse.statusCode, userInfo: ["message": errorMessage, "details": errorDetails])))
-                        return
-                    }
-                    
-                    guard let responseData = data else {
-                        completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data in response"])))
-                        return
-                    }
-                    
-                    // Nova Canvasのレスポンス形式に合わせてデコード処理が必要
-                    // 例: Base64エンコードされた画像データを取り出す
-                    do {
-                        guard let responseDict = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any],
-                              let artifacts = responseDict["artifacts"] as? [[String: Any]],
-                              let firstArtifact = artifacts.first,
-                              let base64Image = firstArtifact["base64"] as? String,
-                              let imageData = Data(base64Encoded: base64Image) else {
-                            print("🔴 レスポンス形式エラー: artifacts または base64 が見つかりません")
-                            completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response format from Nova Canvas"])))
+                        
+                        // APIエラー確認
+                        if let errorMessage = jsonResponse?["message"] as? String {
+                            print("🔴 API Gateway エラー: \(errorMessage)")
+                            completion(.failure(NSError(domain: "APIGatewayError", code: -1, userInfo: [NSLocalizedDescriptionKey: errorMessage])))
                             return
                         }
-                        completion(.success(imageData))
+                        
+                        // その他のエラー
+                        completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response format from API Gateway/Lambda"])))
                     } catch {
-                        print("🔴 レスポンスJSONパースエラー: \(error.localizedDescription)")
-                        completion(.failure(error))
+                        print("🔴 JSONパースエラー: \(error.localizedDescription)")
+                        completion(.failure(NSError(domain: "AWSManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to parse JSON response: \(error.localizedDescription)"])))
                     }
                 }
                 task.resume()
             } catch {
-                print("🔴 リクエスト作成エラー: \(error.localizedDescription)")
+                print("🔴 リクエスト作成/署名エラー: \(error.localizedDescription)")
                 completion(.failure(error))
             }
             return nil
         }
     }
     
-    // Bedrockの設定情報をユーザーに表示するためのヘルパーメソッド
-    public func getBedrockConfigInfo() -> [String: Any] {
-        return [
-            "cognitoPoolId": self.cognito_pool_id,
-            "cognitoRegion": self.cognito_region,
-            "bedrockRegion": self.bedrock_region,
-            "bedrockEndpoint": self.bedrockEndpoint,
-            "novaCanvasModelId": self.novaCanvasModelId // Titan IDをNova Canvas IDに変更
-            // "titanImageV1": self.titanImageV1, // 削除
-            // "titanImageV2": self.titanImageV2  // 削除
-        ]
-    }
-    
-    // IAMポリシーの問題をチェックするヘルパーメソッド
-    public func checkIAMPolicies(completion: @escaping (Bool, String?) -> Void) {
-        guard let credentialsProvider = self.credentialsProvider else {
-            completion(false, "認証情報プロバイダーが設定されていません")
-            return
-        }
-        
-        credentialsProvider.credentials().continueWith { (task) -> Any? in
-            if let error = task.error {
-                completion(false, "認証情報の取得に失敗しました: \(error.localizedDescription)")
-                return nil
-            }
-            
-            guard let credentials = task.result else {
-                completion(false, "認証情報が取得できませんでした")
-                return nil
-            }
-            
-            // 認証情報が取得できた場合、簡単なテストリクエストを送信
-            let testDict = ["testRequest": true]
-            let modelId = self.novaCanvasModelId // Titan IDをNova Canvas IDに変更
-            let urlString = "\(self.bedrockEndpoint)/model/\(modelId)/invoke"
-            
-            guard let url = URL(string: urlString) else {
-                completion(false, "無効なURL: \(urlString)")
-                return nil
-            }
-            
-            do {
-                let requestData = try JSONSerialization.data(withJSONObject: testDict, options: [])
-                var request = URLRequest(url: url)
-                request.httpMethod = "POST"
-                request.httpBody = requestData
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                
-                // SigV4署名を適用
-                let _ = AWSSigner.sign(
-                    request: &request,
-                    accessKey: credentials.accessKey,
-                    secretKey: credentials.secretKey,
-                    sessionToken: credentials.sessionKey,
-                    region: self.bedrock_region,
-                    service: "bedrock",
-                    date: Date()
-                )
-                
-                let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-                    if let error = error {
-                        completion(false, "ネットワークエラー: \(error.localizedDescription)")
-                        return
-                    }
-                    
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        completion(false, "不正なレスポンス")
-                        return
-                    }
-                    
-                    // 認証エラーのチェック
-                    if httpResponse.statusCode == 403 {
-                        if let data = data, let responseString = String(data: data, encoding: .utf8),
-                           responseString.contains("is not authorized to perform: bedrock:InvokeModel") {
-                            // IAMポリシーの問題を検出
-                            completion(false, "IAM権限エラー: bedrock:InvokeModelのアクションが許可されていません。AWSコンソールでIAMポリシーを確認してください。")
-                            return
-                        }
-                        completion(false, "アクセス権限エラー: HTTPステータスコード \(httpResponse.statusCode)")
-                        return
-                    } else if httpResponse.statusCode == 404 {
-                        completion(false, "リソースが見つかりません: モデルIDまたはエンドポイントが正しいか確認してください")
-                        return
-                    } else if httpResponse.statusCode == 200 {
-                        completion(true, nil) // 認証成功
-                        return
-                    } else {
-                        completion(false, "エラー: HTTPステータスコード \(httpResponse.statusCode)")
-                        return
-                    }
-                }
-                
-                task.resume()
-            } catch {
-                completion(false, "リクエスト作成エラー: \(error.localizedDescription)")
-            }
-            
-            return nil
-        }
-    }
+    // AWSRegionTypeを文字列に変換するヘルパー (AWSSignerに渡すため)
+    private func awsRegionTypeToString(_ regionType: AWSRegionType) -> String? {
+         switch regionType {
+         case .USEast1: return "us-east-1"
+         case .APNortheast1: return "ap-northeast-1"
+         // 他の必要なリージョンを追加
+         default:
+             print("未対応のAWSRegionType: \(regionType)")
+             return nil
+         }
+     }
 }
 
 // AWS SigV4署名を行うヘルパークラス
@@ -382,15 +359,15 @@ class AWSSigner {
 
         let method = request.httpMethod ?? "GET"
 
-        // Canonical URI: パスの正規化とエンコーディング
-        let path = request.url?.path.isEmpty == false ? request.url!.path : "/"
-        // SigV4ではパス内のコロン : を %3A にエンコードする必要がある
-        // 他の文字は Bedrock API の場合、通常エンコード不要なため、単純置換のみ行う
-        let canonicalURI = path.replacingOccurrences(of: ":", with: "%3A")
-        print("🔑 Canonical URI: \(canonicalURI)")
+        // Canonical URI: API Gatewayの場合、ステージ名を含むパスが必要な場合がある
+        // URLにステージ名が含まれていることを前提とする
+        let canonicalURI = request.url?.path.isEmpty == false ? request.url!.path : "/"
+        // API Gatewayでは通常 : のエンコードは不要か、API Gateway側で処理されることが多い
+        // let encodedURI = canonicalURI.replacingOccurrences(of: ":", with: "%3A")
+        print("🔑 Canonical URI: \(canonicalURI)") // エンコードしない
 
 
-        let canonicalQueryString = "" // クエリパラメータがない場合は空文字列
+        let canonicalQueryString = request.url?.query ?? "" // クエリも署名に含める
 
         // Canonical Headers と Signed Headers の作成
         // ヘッダー名を小文字にし、アルファベット順にソート

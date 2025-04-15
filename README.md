@@ -1,89 +1,116 @@
 # CreateImageAWS
 
-An iOS application demonstrating image generation using AWS Bedrock's Nova Canvas model.
+AWS BedrockのNova Canvasモデルを使用した画像生成iOSアプリケーション
 
-## Features
+## 機能概要
 
-- Generate images from text prompts using the Nova Canvas model.
-- Adjust various generation parameters:
-    - Prompt
-    - Style Preset (e.g., photorealistic, digital-art, cinematic)
-    - Image Size (currently supports 1024x1024)
-    - Prompt Adherence (CFG Scale)
-    - Steps
-    - Seed
-- Display the generated image.
-- Save the generated image to the photo library.
-- Share the generated image.
-- Basic error handling and display.
-- UI implemented with SwiftUI.
+- テキストプロンプトを使用してNova Canvasモデルで画像を生成
+- 以下の生成パラメータを調整可能：
+  - プロンプト
+  - スタイルプリセット（photorealistic、digital-art、cinematicなど）
+  - 画像サイズ（現在は1024x1024をサポート）
+  - プロンプト忠実度（CFG Scale）
+  - ステップ数
+  - シード値
+- 生成された画像の表示
+- 生成された画像を写真ライブラリに保存
+- 生成された画像の共有
+- エラー処理と表示
+- SwiftUIによるUI実装
 
-## Prerequisites
+## システム要件
 
-- Xcode 15 or later
-- An AWS account
-- Configured AWS credentials (Cognito Identity Pool recommended)
-- Access granted to the Nova Canvas model in the AWS Bedrock console for your chosen region.
+- Xcode 15以降
+- AWSアカウント
+- 設定済みのAWS認証情報（Cognito Identity Pool推奨）
+- 選択したリージョンでAWS Bedrockコンソールでのnova-canvas-v1モデルへのアクセス権
 
-## Setup
+## システム構成
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd CreateImageAWS
-    ```
-2.  **Configure AWS Credentials:**
-    - Open the Xcode project.
-    - Locate the `AWSCredentials.swift` file.
-    - Replace the placeholder value for `identityPoolId` with your Cognito Identity Pool ID.
-    - Ensure the `cognitoRegion` and `bedrockRegion` are set correctly (e.g., "us-east-1").
-3.  **Configure IAM Role:**
-    - Ensure the IAM role associated with your Cognito Identity Pool (specifically the unauthenticated role) has the necessary permissions to invoke the Nova Canvas Bedrock model. The required action is `bedrock:InvokeModel` with the resource ARN for the Nova Canvas model (e.g., `arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-canvas-v1`).
-    - Make sure the IAM role's trust policy allows assumption by `cognito-identity.amazonaws.com` for your specific Identity Pool ID and for `unauthenticated` identities.
-4.  **Enable Bedrock Model Access:**
-    - In the AWS Management Console, navigate to the Bedrock service.
-    - Go to "Model access".
-    - Ensure you have requested and been granted access to the "Nova Canvas" model in the AWS region you are using.
-5.  **Build and Run:**
-    - Open the `CreateImageAWS.xcodeproj` file in Xcode.
-    - Select a target simulator or device.
-    - Build and run the application (Cmd+R).
+このアプリケーションは以下のコンポーネントで構成されています：
 
-## Usage
+1. **iOS クライアントアプリ**：
+   - Swift/SwiftUIで実装されたユーザーインターフェース
+   - AWS認証情報の管理
+   - AWSサービスとの通信
 
-1.  Enter a text prompt describing the image you want to generate.
-2.  Optionally, select a "Style Preset".
-3.  Optionally, adjust advanced settings like CFG Scale, Steps, and Seed.
-4.  Tap "Generate Image".
-5.  View the generated image.
-6.  Use the "Save to Photos" or "Share" buttons as needed.
+2. **AWS サービス**：
+   - **Amazon Cognito**: 認証管理
+   - **AWS Bedrock**: Nova Canvasモデルによる画像生成
+   - **AWS Lambda**: 画像生成リクエストの処理（オプション）
+   - **Amazon API Gateway**: Lambda関数へのAPIエンドポイント提供（オプション）
 
-## Architecture
+## フォルダ構成
 
--   **SwiftUI:** Used for the user interface.
--   **MVVM (Model-View-ViewModel):**
-    -   `ImageGeneratorView` (View)
-    -   `ImageGeneratorViewModel` (ViewModel): Manages UI state and interacts with `AWSManager`.
-    -   (Model part is implicitly handled by the data structures and AWS responses)
--   **AWSManager:** Singleton class responsible for interacting with the AWS Bedrock API using direct HTTPS requests and SigV4 signing. It handles authentication via Cognito Identity Pool.
--   **AWSCredentials:** Struct holding AWS configuration details (Identity Pool ID, regions).
--   **AWSSigner:** Helper class for generating SigV4 signatures.
+```
+CreateImageAWS/
+├── CreateImageAWS/
+│   ├── AWSManager.swift            # AWS通信を担当するクラス
+│   ├── AWSCredentials.swift        # AWS認証情報（gitignoreに含めること）
+│   ├── AWSCredentials_sample.swift # 認証情報のサンプルファイル
+│   ├── ImageGeneratorView.swift    # メイン画面のUI
+│   ├── ImageGeneratorViewModel.swift # ビューモデル（ロジック部分）
+│   ├── ContentView.swift           # アプリのエントリーポイント
+│   ├── CreateImageAWSApp.swift     # アプリケーション定義
+│   └── Assets.xcassets/            # 画像リソース
+├── CreateImageAWSTests/            # テストコード
+├── CreateImageAWSUITests/          # UIテストコード
+├── lambda_function.py              # AWS Lambdaの関数コード
+└── AWS_Setting.md                  # AWS設定の詳細ガイド
+```
 
-## Future Improvements
+## セットアップ手順
 
-- Add support for negative prompts if supported by Nova Canvas.
-- Implement more robust error handling and user feedback.
-- Add more parameter controls (e.g., sampler selection if applicable).
-- Support different aspect ratios/image sizes supported by Nova Canvas.
-- Improve UI/UX.
-- Consider using the official AWS SDK for Swift instead of manual SigV4 signing for better maintainability (once Bedrock support is mature).
+1. **リポジトリをクローン：**
+   ```bash
+   git clone <repository-url>
+   cd CreateImageAWS
+   ```
 
-## License
+2. **AWS認証情報の設定：**
+   - `AWSCredentials_sample.swift`ファイルを`AWSCredentials.swift`にコピーします
+   ```bash
+   cp CreateImageAWS/AWSCredentials_sample.swift CreateImageAWS/AWSCredentials.swift
+   ```
+   - Xcodeでプロジェクトを開きます
+   - `AWSCredentials.swift`ファイルのプレースホルダーを実際の値で置き換えます：
+     - `identityPoolId`: CognitoアイデンティティプールID
+     - `cognitoRegion`: Cognitoサービスのリージョン
+     - `bedrockRegion`: Bedrockサービスのリージョン
 
-[Your chosen license]
+3. **AWS設定：**
+   - AWS関連の詳細な設定手順については、`AWS_Setting.md`を参照してください
+   - このファイルには以下の情報が含まれています：
+     - Cognito Identity Poolの作成方法
+     - IAMロールの設定方法
+     - Bedrockモデルへのアクセス権限の設定
+     - Lambda関数のデプロイ方法（オプション）
+     - API Gatewayの設定方法（オプション）
 
-## Acknowledgements
+4. **ビルドと実行：**
+   - XcodeでCreateImageAWS.xcodeprojファイルを開きます
+   - ターゲットシミュレータまたはデバイスを選択します
+   - アプリケーションをビルドして実行します（Cmd+R）
 
-- AWS SDK for Swift
-- Amazon Titan Image Generator
-- [Any other acknowledgements] 
+## 使用方法
+
+1. 生成したい画像を説明するテキストプロンプトを入力
+2. 「Generate Image」ボタンをタップ
+3. 生成された画像を表示
+4. 必要に応じて「Save to Photos」または「Share」ボタンを使用
+
+### シミュレータでの注意
+
+- シミュレータでは、「Save to Photos」機能は動作せず、代わりにアプリのドキュメントディレクトリに画像が保存されます
+- 実機で写真ライブラリへの保存機能を使用するには、プロジェクト設定でプライバシー権限を追加する必要があります
+
+## アーキテクチャ
+
+- **SwiftUI:** ユーザーインターフェース
+- **MVVM (Model-View-ViewModel):**
+  - `ImageGeneratorView` (View)
+  - `ImageGeneratorViewModel` (ViewModel): UI状態を管理し、`AWSManager`と相互作用
+  - （Modelはデータ構造とAWSレスポンスによって暗黙的に処理）
+- **AWSManager:** AWS Bedrock APIとの通信を担当するシングルトンクラス。直接HTTPSリクエストとSigV4署名を使用
+- **AWSCredentials:** AWS設定詳細を保持する構造体（Identity Pool ID、リージョンなど）
+

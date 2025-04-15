@@ -35,9 +35,23 @@
 		69CEC8FA2DA93B9F000BA0CE /* CreateImageAWSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CreateImageAWSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		69D6CC722DAEA18300287697 /* Exceptions for "CreateImageAWS" folder in "CreateImageAWS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AWSCredentials_sample.swift,
+				Info.plist,
+			);
+			target = 69CEC8DD2DA93B9E000BA0CE /* CreateImageAWS */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		69CEC8E02DA93B9E000BA0CE /* CreateImageAWS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				69D6CC722DAEA18300287697 /* Exceptions for "CreateImageAWS" folder in "CreateImageAWS" target */,
+			);
 			path = CreateImageAWS;
 			sourceTree = "<group>";
 		};
@@ -415,6 +429,9 @@
 				DEVELOPMENT_TEAM = Q2T8A8W9C3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CreateImageAWS/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -443,6 +460,9 @@
 				DEVELOPMENT_TEAM = Q2T8A8W9C3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CreateImageAWS/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

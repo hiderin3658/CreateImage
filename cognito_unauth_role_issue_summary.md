@@ -1,66 +1,90 @@
-# Cognito Identity Pool 未認証ロール設定の問題に関する状況報告
+# API Gateway + Lambda 経由での Bedrock 利用: 設定と問題点のまとめ
 
-## 問題の概要
+## 1. 目標
 
-iOSアプリケーションからAWS Bedrockの画像生成モデルを呼び出す際に、Cognito Identity Poolを介して一時認証情報を取得しています。**アプリケーションは一時認証情報（アクセスキー、シークレットキー、セッショントークン）の取得には成功しています。** しかし、**取得した認証情報を使用して Bedrock API (`InvokeModel`) を呼び出す段階で 403 Forbidden エラーが発生**し、「User: arn:aws:sts::...:assumed-role/ロール名/CognitoIdentityCredentials is not authorized to perform: bedrock:InvokeModel on resource: モデルARN ...」というエラーメッセージが表示されます。これは、Cognito が引き受けた IAM ロールに必要な権限が付与されていない、または正しく評価されていないことを示唆しています。
+iOS アプリケーションから API Gateway と AWS Lambda を介して AWS Bedrock の画像生成モデル (`amazon.nova-canvas-v1:0`) を利用し、テキストプロンプトに基づいた画像生成を行う。
 
-以前、AWS CLI で Cognito Identity Pool の `UnauthenticatedRoleArn` が `null` になっている問題が確認されましたが、コンソール UI 上での設定箇所が見つからず、CLI (`set-identity-pool-roles`) で設定を試みても反映されない状況がありました。（この問題が現在の権限エラーと直接関連しているかは不明確ですが、設定プロセスにおける課題の一つです。）
+## 2. 新しいアーキテクチャ
 
-## 設定状況の詳細
+1.  **iOS アプリ:** Cognito Identity Pool で一時認証情報を取得し、それを使用して API Gateway のエンドポイント (`/generateImage`) を呼び出す。
+2.  **API Gateway:** IAM 認証を有効にし、リクエストを受け付けると Lambda 関数をトリガーする。
+3.  **Lambda 関数 (Python):** API Gateway からプロンプト等を受け取り、自身の実行ロールの権限で Bedrock API (`InvokeModel`) を呼び出し、結果 (Base64画像) を返す。
+
+## 3. 設定状況の詳細 (変更後)
 
 以下は、関連するAWSリソースの設定状況の概要です。
 
-**1. IAMロール (未認証ユーザー用)**
+**1. IAMロール (Cognito 未認証ユーザー用)**
 
-*   **ロール名:** (例: `BedrockUnauthRole` や `CognitoUnauthBedrockRole`)
-*   **信頼ポリシー:**
-    *   プリンシパル: `cognito-identity.amazonaws.com` (Federated)
-    *   許可されるアクション: `sts:AssumeRoleWithWebIdentity`
-    *   条件 (Condition):
-        *   `cognito-identity.amazonaws.com:aud` が、対象のCognito IDプールIDと一致すること (`StringEquals`)。
-        *   `cognito-identity.amazonaws.com:amr` が `unauthenticated` であること (`ForAnyValue:StringLike`)。
-    *   *信頼関係ポリシーの設定は正しいことを確認済み。*
-*   **許可ポリシー (インラインまたはアタッチ):**
-    *   許可されるアクション: `bedrock:InvokeModel`
-    *   対象リソース: 使用するBedrockモデルのARN (例: `arn:aws:bedrock:ap-northeast-1::foundation-model/amazon.titan-image-generator-v1` など)。
-    *   *ポリシー内容、ロールへのアタッチ状況は正しいことを確認済み。IAM Policy Simulator でも Allow となることを確認済み (または、確認したが Deny となり原因不明の場合もある)。*
+*   **ロール名:** (例: `CognitoUnauthBedrockRole`)
+*   **信頼ポリシー:** 以前と同様 (Cognito Identity Pool からの `sts:AssumeRoleWithWebIdentity` を許可、正しい Pool ID と `amr: unauthenticated` を Condition で指定)。
+*   **許可ポリシー:**
+    *   **必要な権限:** `execute-api:Invoke`
+    *   **対象リソース:** 作成した API Gateway の Invoke ARN (例: `arn:aws:execute-api:ap-northeast-1:ACCOUNT_ID:API_ID/*/POST/generateImage`)
+    *   **不要な権限:** `bedrock:InvokeModel` は削除。
 
-**2. Cognito Identity Pool**
+**2. IAM ロール (Lambda 実行用)**
+
+*   **ロール名:** (例: `BedrockInvokeLambdaRole`)
+*   **信頼ポリシー:** Lambda サービス (`lambda.amazonaws.com`) からの `sts:AssumeRole` を許可。
+*   **許可ポリシー:**
+    *   **必要な権限:** `bedrock:InvokeModel`
+    *   **対象リソース:** 使用する Bedrock モデルの ARN (`arn:aws:bedrock:ap-northeast-1::foundation-model/amazon.nova-canvas-v1:0`)
+    *   **必要な権限:** CloudWatch Logs への書き込み権限 (`logs:CreateLogGroup`, `logs:CreateLogStream`, `logs:PutLogEvents`)
+
+**3. Cognito Identity Pool**
 
 *   **ID プール名:** (例: `NovaCanvasAppPool`)
-*   **リージョン:** `ap-northeast-1` (IAMロール、Bedrockモデルと一貫性あり)
-*   **未認証アクセス:** 有効化済み (`AllowUnauthenticatedIdentities` が `true`)。
-*   **未認証ロール:** **AWS コンソール上で、上記 IAM ロールが正しく設定されていることを確認済み。**
-    *   （過去に CLI で `UnauthenticatedRoleArn` が `null` になる問題があったが、現在はコンソール上で設定済み）
+*   **リージョン:** `ap-northeast-1`
+*   **未認証アクセス:** 有効化済み。
+*   **未認証ロール:** 上記 **1.** の IAM ロール (`CognitoUnauthBedrockRole`) が設定されていることを確認済み。
 
-**3. Bedrock モデルアクセス**
+**4. Lambda 関数**
 
-*   AWSアカウントレベルで、対象リージョン (`ap-northeast-1`) において、使用するBedrockモデル（例: `amazon.titan-image-generator-v1`）へのアクセス権が付与されていることをコンソールで確認済み。
+*   **ランタイム:** Python (例: 3.11)
+*   **コード:** API Gateway からのリクエストを処理し、Boto3 を使用して Bedrock API を呼び出し、Base64 エンコードされた画像を返す。
+*   **実行ロール:** 上記 **2.** の IAM ロール (`BedrockInvokeLambdaRole`) を設定。
+*   **環境変数:** `AWS_REGION` (`ap-northeast-1`), `BEDROCK_MODEL_ID` (`amazon.nova-canvas-v1:0`) を設定 (推奨)。
+*   **タイムアウト/メモリ:** 適切に設定。
 
-**4. 操作ユーザーと権限**
+**5. API Gateway**
 
-*   コンソール/CLI 操作ユーザーは、関連リソースの編集に必要な権限を持っている。
+*   **API タイプ:** REST API
+*   **エンドポイント:** `/generateImage` (POST メソッド)
+*   **認証:** AWS_IAM
+*   **統合:** Lambda プロキシ統合で上記 **4.** の Lambda 関数を指定。
+*   **デプロイ:** ステージにデプロイし、**呼び出し URL** を取得。
 
-**5. アプリケーションコード**
+**6. Bedrock モデルアクセス**
 
-*   Cognito ID プール ID は、作成されたプールのIDと一致していることを確認済み。
-*   リージョン設定 (`ap-northeast-1`) はAWS上の設定と一貫していることを確認済み。
-*   SigV4 署名ロジックは修正済みで、署名関連のエラーは解消済み。
-*   アプリは Cognito から一時認証情報を正常に取得できているログを確認済み。
+*   リージョン `ap-northeast-1` で、使用する Bedrock モデル (`amazon.nova-canvas-v1:0`) へのアクセス権が付与されていることを確認済み。
 
-## 試したこと
+**7. アプリケーションコード (`AWSManager.swift`)**
 
-*   IAMロールの許可ポリシーで `Resource` を `"*"` に変更（変化なし、元に戻した）。
-*   IAMロール、Cognito IDプールを削除し、再作成。
-*   IAMポリシー、Cognito設定変更後の十分な待機（30分以上）。
-*   コンソールキャッシュのクリア、別ブラウザでの試行。
-*   アプリのクリーンビルド、シミュレーター/デバイスの再起動。
-*   IAM Policy Simulator での権限確認。
+*   Cognito ID プール ID、リージョンを設定済み。
+*   **API Gateway 呼び出し URL** を `AWSCredentials.swift` に設定済み。
+*   `invokeApiGateway` メソッドで API Gateway エンドポイントを呼び出し、SigV4 署名 (Service: `execute-api`) を行っている。
+*   Lambda から返される Base64 画像データを処理。
 
-## 現在の状況と課題
+## 4. 移行後の想定される問題とデバッグポイント
 
-Cognito Identity Pool 経由での一時認証情報の取得は成功している。しかし、その認証情報を用いて Bedrock API (`InvokeModel`) を呼び出すと、403 Forbidden (AccessDeniedException) エラーが発生する。エラーメッセージは、Cognito が引き受けた IAM ロールに `bedrock:InvokeModel` の権限がないことを示している。
+*   **iOS -> API Gateway:**
+    *   403 Forbidden (SigV4 署名エラー): `AWSSigner` の実装 (特に Service='execute-api', Canonical URI/Query) を確認。
+    *   403 Forbidden (IAM 権限エラー): Cognito IAM Role (`CognitoUnauthBedrockRole`) に `execute-api:Invoke` 権限が正しく付与されているか、リソース ARN が正しいか確認。
+    *   404 Not Found: API Gateway のエンドポイント URL、パス、デプロイステージが正しいか確認。
+    *   5xx Server Error: API Gateway -> Lambda 間の統合設定、マッピングテンプレート (プロキシ統合なら不要) を確認。
+*   **API Gateway -> Lambda:**
+    *   Lambda 実行ログ (CloudWatch Logs) を確認。
+    *   Lambda のトリガー設定、権限を確認。
+*   **Lambda -> Bedrock:**
+    *   Lambda 実行ログを確認。
+    *   Lambda 実行ロール (`BedrockInvokeLambdaRole`) に `bedrock:InvokeModel` 権限が正しく付与されているか確認。
+    *   Bedrock API リクエストのパラメータ形式が正しいか確認。
+    *   Bedrock モデルアクセスが有効か確認。
+*   **Lambda -> API Gateway / iOS:**
+    *   Lambda のレスポンス形式が API Gateway (プロキシ統合) の期待する形式になっているか確認 (statusCode, headers, body)。
+    *   Base64 エンコード/デコード処理が正しいか確認。
 
-IAM ロールの許可ポリシー、信頼ポリシー、Cognito Identity Pool のロール設定、Bedrock モデルアクセス設定、アプリ側のコード（認証情報取得、署名、API 呼び出し）は、すべて正しく構成されているように見える。IAM Policy Simulator でも権限が許可されるはずだが、それでも実際の API 呼び出しではアクセスが拒否されるという矛盾した状況が発生している。
+## 5. 現在の状況
 
-根本的な原因の特定に至っておらず、問題解決が難航している。 
+アーキテクチャ変更を実施中。iOS アプリコード、Lambda 関数コードを実装・修正。AWS リソース (Lambda 実行ロール、Lambda 関数、API Gateway) の作成と設定、および Cognito IAM Role の権限更新が必要。 

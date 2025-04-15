@@ -1,0 +1,1 @@
+{"statusCode": 400, "headers": {"Content-Type": "application/json"}, "body": "{\"error\": \"Bedrock API validation error: An error occurred (ValidationException) when calling the InvokeModel operation: Malformed input request: #/system: expected type: JSONArray, found: JSONObject, please reformat your input and try again.\"}"}

@@ -1,0 +1,32 @@
+sequenceDiagram
+    participant App as iOS App
+    participant CogIdP as Cognito Identity Pool
+    participant STS
+    participant CogRole as IAM Role (Cognito用)<br/>[execute-api:Invoke 権限]
+    participant APIGW as API Gateway<br/>(IAM認証)
+    participant LambdaRole as IAM Role (Lambda用)<br/>[bedrock:InvokeModel,<br/>logs:* 権限]
+    participant Lambda as Lambda Function
+    participant Bedrock
+    participant CwLogs as CloudWatch Logs
+    %% 1. Cognitoから一時認証情報を取得 %%
+    App->>CogIdP: (1) Identity ID 取得リクエスト
+    CogIdP-->>App: Identity ID
+    App->>STS: (2) AssumeRoleWithWebIdentity<br/>(IdentityID, PoolID)
+    STS->>CogRole: (3) 信頼ポリシー確認<br/>(PoolID, amr:unauth)
+    CogRole-->>STS: Assume許可
+    STS-->>App: (4) 一時認証情報発行<br/>(CogRoleの権限を持つ)
+    %% 2. API Gateway経由でLambdaを呼び出し %%
+    Note over App: (5) API GWリクエストを<br/>一時認証情報で署名
+    App->>APIGW: (6) POST /generate-image<br/>(署名付きリクエスト, プロンプト)
+    APIGW->>IAM: (7) 署名検証 & 認可確認<br/>(CogRoleにexecute-api:Invoke権限があるか？)
+    IAM-->>APIGW: 認可OK
+    APIGW->>Lambda: (8) Lambda関数呼び出し<br/>(リクエストデータ転送)
+    %% 3. Lambda関数内でBedrockを呼び出し %%
+    Lambda->>LambdaRole: (9) Lambda実行ロール引き受け
+    Lambda->>CwLogs: (10) ログ出力 (LambdaRole権限)
+    Lambda->>Bedrock: (11) InvokeModel (プロンプト) (LambdaRole権限)
+    Bedrock-->>Lambda: (12) 画像データ (Base64)
+    Lambda-->>APIGW: (13) 整形したレスポンス<br/>(画像データ含む)
+    %% 4. レスポンスをアプリに返す %%
+    APIGW-->>App: (14) APIレスポンス
+    App->>App: (15) 画像表示など

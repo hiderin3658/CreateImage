@@ -236,4 +236,4 @@ struct ImageGeneratorView_Previews: PreviewProvider {
     static var previews: some View {
         ImageGeneratorView()
     }
-} 
+}
